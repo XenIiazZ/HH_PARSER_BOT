@@ -1,0 +1,50 @@
+from flask import Flask, request, jsonify
+import mysql.connector
+
+app = Flask(__name__)
+# Настройки базы данных
+DB_HOST = 'db'
+DB_USER = 'root'
+DB_PASSWORD = 'DoLlitoS640M'
+DB_NAME = 'hh_data'
+
+@app.route('/analytics')
+def get_analytics():
+    try:
+        connection = mysql.connector.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, database=DB_NAME)
+        cursor = connection.cursor()
+        # Получаем случайную вакансию
+        cursor.execute("SELECT * FROM vacancies ORDER BY RAND() LIMIT 1")
+        random_vacancy = cursor.fetchone()
+
+        # Получаем случайного кандидата
+        cursor.execute("SELECT * FROM resumes ORDER BY RAND() LIMIT 1")
+        random_candidate = cursor.fetchone()
+
+        # Получаем количество вакансий
+        cursor.execute("SELECT COUNT(*) FROM vacancies")
+        vacancy_count = cursor.fetchone()[0]
+
+        # Получаем количество кандидатов
+        cursor.execute("SELECT COUNT(*) FROM resumes")
+        candidate_count = cursor.fetchone()[0]
+
+        # Вычисляем среднее количество кандидатов на вакансию
+        avg_candidates_per_vacancy = candidate_count / vacancy_count if vacancy_count else 0
+
+        cursor.close()
+        connection.close()
+
+        return jsonify({
+            'vacancy_count': vacancy_count,
+            'candidate_count': candidate_count,
+            'avg_candidates_per_vacancy': avg_candidates_per_vacancy,
+            'vacancies':random_vacancy,
+            'resumes':random_candidate
+        })
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8001, debug=True)
+ 
