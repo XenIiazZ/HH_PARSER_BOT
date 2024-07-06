@@ -162,9 +162,6 @@ for a in get_links("python"):
         cnx.commit()
 
 def get_link(text):
-    """Функция для получения ссылок на вакансии
-    в соответствии с подаваемыми в неё ключевыми словами"""
-    
     ua = fake_useragent.UserAgent() # для передачи заголовка
     data = requests.get(
         url=f"https://hh.ru/search/vacancy?text={text}&area=113&page=1",
