@@ -169,10 +169,10 @@ def get_link(text):
     data = requests.get(
         url=f"https://hh.ru/search/vacancy?text={text}&area=113&page=1",
         
-        headers={"user-agent":ua.random} # создаём заголовок, передаём ему случайный заголовок из созданного объекта
+        headers={"user-agent":ua.random} 
     )
     
-    if data.status_code != 200: # то есть, если код обработки запроса не 200 (есть ошибки), то выходим из функции
+    if data.status_code != 200:
         return
     
     soup = BeautifulSoup(data.content, "lxml") # передаём контент страницы
@@ -226,22 +226,22 @@ def get_vacancy(link):
         name = soup.find(attrs={"class":"vacancy-title"}).text.replace("от"," от ").replace("до"," до ")
     except:
         name = ""
-    # зарплата
+   
     try:
         salary = soup.find(attrs={"data-qa":"vacancy-salary-compensation-type-net"}).text.replace("\xa0","")
     except:
         salary = ""
-    # опыт работы
+   
     try:
         experience = soup.find(attrs={"class":"vacancy-description-list-item"}).text.replace("Требуемый опыт работы: ","")
     except:
         experience = ""
-    # режим работы
+    
     try:
         schedule = soup.find(attrs={"class":"vacancy-description-list-item", "data-qa":"vacancy-view-employment-mode"}).text
     except:
         schedule = ""
-    # требуемые навыки
+   
     try:
         skills = [skills.text for skills in soup.find(attrs={"class":"bloko-tag-list"})\
                                                     .find_all(attrs={"class":"bloko-tag__section bloko-tag__section_text",\
@@ -249,13 +249,13 @@ def get_vacancy(link):
     
     except:
         skills = ""
-    # адрес
+   
     try:
         address = soup.find(attrs={"data-qa":"vacancy-address-with-map", "class":"bloko-text bloko-text_large"}).text
     
     except:
         address = ""
-    # дата публикации вакансии
+    
     try:
         vacancy_date = soup.find(attrs={"class":"vacancy-creation-time-redesigned"}).text.replace("Вакансия опубликована ","")\
         .replace("\xa0"," ")
